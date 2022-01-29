@@ -1,0 +1,4 @@
+<launch>
+	<node name="opencv_publisher" pkg="edge_detection" type="opencv_publisher.py" output="screen" respawn="true"/>
+
+</launch>

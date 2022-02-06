@@ -4,7 +4,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import cv2 as cv
 
-video=cv.VideoCapture(2)
+video=cv.VideoCapture(0)
 print(video.isOpened())
 bridge=CvBridge()
 

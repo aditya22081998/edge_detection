@@ -20,14 +20,22 @@ class listener:
             kernel= np.ones((5,5),np.uint8)
             cv2_img=self.bridge.imgmsg_to_cv2(msg,'bgr8')
             # gray= cv.cvtColor(cv2_img, cv.COLOR_BGR2GRAY)
+            
             ret, thresh=cv.threshold(cv2_img, 0, 128, cv.THRESH_TOZERO)
             gblur=cv.GaussianBlur(thresh,(3,3),0)
             erosi=cv.erode(thresh,kernel,iterations=1)
             canny=cv.Canny(erosi,100,200)
             # sobelxy=cv.Sobel(canny, cv.CV_64F, 1, 1, 5)
+            _,contours, hierarchy= cv.findContours(canny, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+		
+            for cnt in contours:
+                rect = cv.minAreaRect(cnt)
+                box = cv.boxPoints(rect)
+                box = np.int0(box)
+                if(rect[1][0]<110 and rect[1][0]>40 and rect[1][1]<70 and rect[1][1]>40):
 
-
-            
+                    cv.drawContours(cv2_img, [box], -1, (0,255,0),2)
+                    cv.imshow('Contours', cv2_img)
         except CvBridgeError as e:
             print(e)
         cv.imshow('Gaussian Blur',gblur)
@@ -40,13 +48,13 @@ class listener:
 
             self.counter +=1
             self.now= rospy.get_rostime().secs
+            
             if (self.now-self.start)/60>0.5:
                 rospy.signal_shutdown("")
-    
-    def end(self):
-        print ("This node would be dead, Good bye")
-        cv2.destroyAllWindows() 
 
+    def end(self):
+        cv2.destroyAllWindows() 
+        rospy.loginfo ("This node would be dead, Good bye")
 if __name__=='__main__':
    try: 
        listener=listener()
